@@ -1,24 +1,27 @@
 const express = require("express");
+const cors = require("cors");
 const { v1, validate } = require("uuid");
 
 let projects = [];
 
 const logRequest = (req, res, next) => {
   const { method, url } = req;
-  const logLabel = `${method.toUpperCase()} ${url}`
+  const logLabel = `${method.toUpperCase()} ${url}`;
   console.time(logLabel);
   next();
   console.timeEnd(logLabel);
-}
+};
 
 const validateProjectId = (req, res, next) => {
   const { id } = req.params;
-  if (validate(id) === false) return res.status(404).send("<p>ID Invalido!</p>");
-  else return next()
-}
+  if (validate(id) === false)
+    return res.status(404).send("<p>ID Invalido!</p>");
+  else return next();
+};
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.use(logRequest);
@@ -26,7 +29,11 @@ app.use("/projects/:id", validateProjectId);
 
 app.get("/projects", (req, res) => {
   const { title } = req.query;
-  const result = title ? projects.filter((p) => p.title.toLowerCase().includes(title.toLowerCase())) : projects;
+  const result = title
+    ? projects.filter((p) =>
+        p.title.toLowerCase().includes(title.toLowerCase())
+      )
+    : projects;
   return res.status(200).json(result);
 });
 
