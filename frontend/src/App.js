@@ -7,16 +7,20 @@ import "./App.css";
 const App = () => {
   const [projects, setProjects] = useState([]);
 
+  
   useEffect(() => {
     api.get("projects").then((response) => {
-      console.log(response);
+      setProjects([...response.data]);
     });
   }, []);
 
-  const handleAddProject = () => {
-    const newArray = [...projects, `Projeto ${Date.now()}`];
-    setProjects([...newArray]);
-    console.log(projects);
+  const handleAddProject = async () => {
+    const data = {
+      title : `Projeto ${Date.now()}`,
+      owner: `Dono ${Date.now()}`
+    }
+    const project = await (await api.post("projects", data)).data;
+    setProjects([...projects, project]);
   };
   return (
     <>
@@ -27,7 +31,7 @@ const App = () => {
         </button>
         <ul>
           {projects.map((project) => (
-            <li key={project}>{project}</li>
+            <li key={project.id}><h1>{project.title}</h1><p>{project.owner}<br />{project.id}</p></li>
           ))}
         </ul>
       </div>
